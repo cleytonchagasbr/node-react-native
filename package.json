@@ -1,0 +1,11 @@
+{
+  "name": "node-react-native",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/cleytonchagasbr/node-react-native.git",
+  "author": "Cleyton Chagas <cleyton-chagas@hotmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
