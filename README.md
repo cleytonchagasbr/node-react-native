@@ -1,8 +1,8 @@
 # node-react-native
 Aplicação em Node, React JS e React Native
 
-# Rotas
+Rotas
 
-# Backend | Node Js
+Backend | Node Js
 
-# Frontend | React Js
+Frontend | React Js
