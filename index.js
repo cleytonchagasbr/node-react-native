@@ -11,19 +11,40 @@ server.use(express.json());
 
 const users = ['user1', 'Cleyton', 'user3'];
 
-server.get('/users/:index', (request, response) => {
+server.use((request, response, next) => {
+    console.log(`Método: ${request.method}; URL: ${request.url}`);
+    return next();
+});
 
-    const { index }  = request.params;
+function checkUserExists(request, response, next) {
+    if(!request.body.name) {
+        return response.status(400).json({ error: 'User name is required'});
+    }
 
-    return response.json(users[index]);
+    return next();
+}
+
+function checkUserInArray(request, response, next) {
+    const user = users[request.params.index];
+
+    if(!users[request.params.index]) {
+        return response.status(400).json({ error: 'User not exists'});
+    }
+
+    request.user = user;
+
+    return next();
+}
+
+server.get('/users/:index', checkUserInArray, (request, response) => {
+    return response.json(request.user);
 });
 
 server.get('/users', (request, response ) => {
     return response.json(users);
 });
 
-server.post('/users', (request, response) => {
-
+server.post('/users', checkUserExists, (request, response) => {
     const { name } = request.body;
     users.push(name);
 
@@ -31,20 +52,16 @@ server.post('/users', (request, response) => {
 
 });
 
-server.put('/users/:index', (request, response) => {
-
+server.put('/users/:index', checkUserExists, checkUserInArray, (request, response) => {
     const { index } = request.params; 
     const { name } = request.body;
-
     users[index] = name;
 
     return response.send();
 });
 
 server.delete('/users/:index', (request, response) => {
-        
     const { index } = request.params;
-    
     users.splice(index, 1);
 
     return response.json(users);
