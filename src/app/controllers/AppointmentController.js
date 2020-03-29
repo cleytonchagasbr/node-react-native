@@ -2,8 +2,8 @@ import Appointment from '../models/Appointments';
 import * as Yup from 'yup';
 import User from '../models/User';
 import File from '../models/File';
-import { startOfHour, parseISO, isBefore } from 'date-fns';
-import { response } from 'express';
+import { startOfHour, parseISO, isBefore, format } from 'date-fns';
+import Notification from '../schemas/Notification';
 
 class AppointmentController {
     async index(req, res) {
@@ -34,8 +34,6 @@ class AppointmentController {
 
         return res.json(appointments);   
     }
-
-
 
     async store(req, res) {
       const schema = Yup.object().shape({
@@ -91,6 +89,21 @@ class AppointmentController {
         provider_id,
         date,
       });
+
+      // Notify provider
+      const user = await User.findByPk(req.userId);
+      const formattedDate = format(
+        hourStart,
+        "'dia' dd 'de' MMMM', às' H:mm'h'",
+        {
+          locale: pt,
+        }
+      );
+      await Notification.create({
+        content: `Novo agendamento de ${user.name} para o ${formattedDate}`,
+        user: provider_id,
+      });
+
   
       return res.json(appointment);
     }
